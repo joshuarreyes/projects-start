@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const users = JSON.parse(userContent);
 
     /*set initial section display to none*/
-    const detailSections = this.getElementsByClassName("Details");
+    const detailSections = document.getElementsByClassName("Details");
     detailSections[0].style.display = "none";
 
     /*Generate the user list by looping through the objects in users.json and
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const text = document.createTextNode(userinfo.user.lastname + ", " + userinfo.user.firstname);
         li.appendChild(text);
         li.dataset.id = userinfo.id;
-        document.getElementsByTagName("ul")[0].appendChild(li);
+        document.getElementById("userlist").appendChild(li);
     }
 
     /*Use event delegation to handle all click events in the user list. If a list item is
@@ -31,6 +31,8 @@ document.addEventListener('DOMContentLoaded', function() {
             let user;
 
             detailSections[0].style.display = "block";
+            document.getElementsByClassName("StockDetails")[0].style.display = "none";
+
             let firstnameEntry = document.getElementById("firstname");
             let lastnameEntry = document.getElementById("lastname");
             let addressEntry = document.getElementById("address");
@@ -52,7 +54,49 @@ document.addEventListener('DOMContentLoaded', function() {
                     //display their stock portfolio holdings in the portfolio section
                     let portfolioinfo = user.portfolio;
                     for (let ownedStock of portfolioinfo) {
-                       
+          
+                        
+                        const h3 = document.createElement("h3");
+                        const h3_2 = document.createElement("h3");
+                        const symbol = document.createTextNode(ownedStock.symbol);
+                        const owned = document.createTextNode(ownedStock.owned);
+                        const button = document.createElement("button");
+
+                        h3.appendChild(symbol);
+                        h3_2.appendChild(owned);
+                        button.appendChild(document.createTextNode("View"));
+                        button.dataset.symbol = ownedStock.symbol;
+                        button.className = "viewButton";
+
+                        document.getElementById("listPortfolio").appendChild(h3);
+                        document.getElementById("listPortfolio").appendChild(h3_2);
+                        document.getElementById("listPortfolio").appendChild(button);
+                        
+                        button.addEventListener("click", function(e) {
+                            
+                            if (e.target.className === "viewButton" && e.target.dataset.symbol == button.dataset.symbol) {
+                                let imagesrc = "./logos/" + e.target.dataset.symbol + ".svg";
+                                document.getElementById("logo").src = imagesrc;
+                                document.getElementsByClassName("StockDetails")[0].style.display = "block";
+                                
+                                if (document.getElementById("stockName").firstChild != null) {
+                                    document.getElementById("stockName").removeChild(document.getElementById("stockName").firstChild);
+                                    document.getElementById("stockSector").removeChild(document.getElementById("stockSector").firstChild);
+                                    document.getElementById("stockIndustry").removeChild(document.getElementById("stockIndustry").firstChild);
+                                    document.getElementById("stockAddress").removeChild(document.getElementById("stockAddress").firstChild);
+                                }
+
+                                for (let stockinfo of stock) {
+                                    if (stockinfo.symbol == e.target.dataset.symbol) {
+                                        document.getElementById("stockName").appendChild(document.createTextNode(stockinfo.name));
+                                        document.getElementById("stockSector").appendChild(document.createTextNode(stockinfo.sector));
+                                        document.getElementById("stockIndustry").appendChild(document.createTextNode(stockinfo.subIndustry));
+                                        document.getElementById("stockAddress").appendChild(document.createTextNode(stockinfo.address));
+                                    }
+                                }
+
+                            }
+                        });
                     }
                     
 
